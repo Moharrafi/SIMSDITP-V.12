@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Laporan_pegawai" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cd30aa23-6747-411e-8970-7482d7b0ebb6">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="simsditp_online"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT 
+    @no := @no + 1 AS nomor,          -- Menambahkan nomor urut menggunakan variabel
+    nama_pegawai,
+    kelamin,
+    jabatan,
+    jenis_pegawai,
+    nip,
+    CURDATE() AS tanggal_laporan      -- Menambahkan kolom tanggal hari ini
+FROM 
+    pegawai, (SELECT @no := 0) AS init_var -- Menyiapkan variabel @no sebelum digunakan
+ORDER BY 
+    nama_pegawai ASC;]]>
+	</queryString>
+	<field name="nomor" class="java.lang.Long"/>
+	<field name="nama_pegawai" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nama_pegawai"/>
+		<property name="com.jaspersoft.studio.field.label" value="nama_pegawai"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="pegawai"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="kelamin" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="kelamin"/>
+		<property name="com.jaspersoft.studio.field.label" value="kelamin"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="pegawai"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="jabatan" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jabatan"/>
+		<property name="com.jaspersoft.studio.field.label" value="jabatan"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="pegawai"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="jenis_pegawai" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jenis_pegawai"/>
+		<property name="com.jaspersoft.studio.field.label" value="jenis_pegawai"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="pegawai"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nip" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nip"/>
+		<property name="com.jaspersoft.studio.field.label" value="nip"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="pegawai"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tanggal_laporan" class="java.sql.Date"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#FFFFFF" uuid="448a1374-3d82-431a-a6da-568450778902"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="10" y="10" width="60" height="72" uuid="26fc1456-5115-4b0a-b497-da0d818d35e5"/>
+					<imageExpression><![CDATA["Laporan\\sekolah.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="520" y="10" width="60" height="73" uuid="009d7db4-224f-4995-abdb-48143a9a5607"/>
+					<imageExpression><![CDATA["Laporan\\logo.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="119" y="53" width="353" height="30" forecolor="#030303" backcolor="#FFFFFF" uuid="413d7125-2898-415b-926a-a4054b5359b4"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Jl. Raya Bekasi Km. 18, Jatinegara, Kecamatan Cakung, Kota Jakarta Timur, DKI Jakarta 13930]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="80" y="24" width="430" height="29" forecolor="#030303" uuid="ea87bcfd-1df9-4184-b3c1-126e14b07b76"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SD ISLAM TELADAN PULOGADUNG PAGI]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="24">
+			<staticText>
+				<reportElement x="185" y="0" width="180" height="20" forecolor="#030303" backcolor="#FFFFFF" uuid="7961fde3-e9d0-4990-b49c-d1c59542a470"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Laporan Pegawai]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="-20" y="20" width="595" height="1" forecolor="#666666" uuid="3dbb10d1-3fa2-450a-adc9-b74393f8cc9e"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="185" y="0" width="26" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="6878e670-fd47-4a47-97f6-8b6562ed5b73">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="53c6c326-e5bf-4641-b586-9fc673ca2efe"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JK]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="211" y="0" width="122" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="1d846203-09c5-45f6-a212-f21ab79b80df">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5eb73cb6-79dd-42ac-a961-c625c453c5c0"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Jabatan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="333" y="0" width="97" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="672b61d2-ba33-480a-ac39-3969d84be1e4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7847f869-6488-4604-b041-9a28b2efcc81"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Jenis Pegawai]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="430" y="0" width="125" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="27730615-6690-4ef9-9050-0de24564c2ff">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="35bb45bd-7486-4a3b-959d-3503586cb824"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIP / NI KKKP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="31" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="1727f7cb-a829-4d7b-a736-d5faf0ca011c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c5f8cb04-e976-418e-a2a1-5c60d199a264"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="31" y="0" width="154" height="20" forecolor="#000000" backcolor="#E6E6E6" uuid="3e824301-7ce8-4dcd-bbf0-2c03ea858b76">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c5f8cb04-e976-418e-a2a1-5c60d199a264"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Pegawai]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1" uuid="287d99b7-c43c-4fe5-b52a-e4167a7368a3"/>
+			</line>
+			<textField>
+				<reportElement x="31" y="0" width="154" height="20" uuid="1e6d21da-1528-4706-869d-06e04c0668b7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c5f8cb04-e976-418e-a2a1-5c60d199a264"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nama_pegawai}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="185" y="0" width="26" height="20" uuid="b80fb1f5-2a84-412f-99cf-078e92c40b8f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="53c6c326-e5bf-4641-b586-9fc673ca2efe"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kelamin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="211" y="0" width="122" height="20" uuid="153bbd41-105b-4acd-95d8-7914c0402c90">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5eb73cb6-79dd-42ac-a961-c625c453c5c0"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{jabatan}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="333" y="0" width="97" height="20" uuid="81c8b420-3251-47d1-a629-63dcfb42690a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7847f869-6488-4604-b041-9a28b2efcc81"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{jenis_pegawai}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="0" width="125" height="20" uuid="6af59263-4235-4ae5-80c9-eb5f585a4a16">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="35bb45bd-7486-4a3b-959d-3503586cb824"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nip}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="31" height="20" uuid="6c4f0838-5d7b-40a0-b857-2b1f1cdbc177">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c5f8cb04-e976-418e-a2a1-5c60d199a264"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nomor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="104">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="421" y="10" width="134" height="17" uuid="d695bb28-5efc-474e-a5ab-923083930f32"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale("id", "ID")).format($F{tanggal_laporan})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="375" y="27" width="105" height="23" uuid="26ad33e3-2a47-4eb5-be6e-c4f45861700e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Kepala Sekolah]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="80" width="125" height="23" uuid="c62f0730-8281-4a5c-a586-11bfdc7524a5"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[...............................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="10" width="46" height="17" uuid="e7ce7175-ad84-431a-859b-5f986d4325c0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Jakarta,]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

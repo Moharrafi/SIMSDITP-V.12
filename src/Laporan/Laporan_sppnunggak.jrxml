@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="803" pageHeight="842" columnWidth="763" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="95b091c2-e6c5-4ef2-9e6f-466d62479177">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="191"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="kelas" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="bulan" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+    @no := @no + 1 AS no,  -- Nomor urut otomatis
+    s.nisn,
+    s.nipd,
+    s.nama_siswa,
+    s.kelas,
+    s.status_bantuan, -- Tambahkan status bantuan untuk referensi
+    COALESCE(spp.periode, '-') AS periode, -- Jika tidak ada data di SPP, tampilkan '-'
+
+    -- Format jumlah dalam Rupiah tanpa spasi (contoh: Rp150.000)
+    CONCAT('Rp.', FORMAT(COALESCE(SUM(CASE WHEN spp.komponen = 'SPP' THEN spp.jumlah_bayar ELSE 0 END), 0), 0)) AS spp,
+
+    CONCAT('Rp.', FORMAT(COALESCE(SUM(CASE WHEN spp.komponen = 'K.Bulanan' THEN spp.jumlah_bayar ELSE 0 END), 0), 0)) AS k_bulanan,
+
+    COALESCE(MAX(spp.tanggal), '-') AS tanggal_pembayaran_terakhir,
+
+    CONCAT('Rp.', FORMAT(COALESCE(SUM(spp.jumlah_bayar), 0), 0)) AS total,
+
+    -- Perhitungan status pembayaran
+    CASE 
+        WHEN COUNT(spp.nisn) = 0 THEN 'Nunggak'
+        
+        WHEN COALESCE(SUM(spp.jumlah_bayar), 0) < 
+            (CASE 
+                WHEN s.kelas IN ('1', '2') 
+                     THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 200000 ELSE 300000 END) 
+                WHEN s.kelas IN ('3', '4', '5', '6') 
+                     THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 150000 ELSE 250000 END) 
+                ELSE 99999999
+            END)
+        THEN 'Nunggak'
+ 
+        ELSE 'Lunas'
+    END AS status,
+
+    -- Perhitungan total sisa tunggakan dalam format Rupiah tanpa spasi
+    CONCAT('Rp.', FORMAT(
+        CASE 
+            WHEN COUNT(spp.nisn) = 0 THEN 
+                (CASE 
+                    WHEN s.kelas IN ('1', '2') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 200000 ELSE 300000 END) 
+                    WHEN s.kelas IN ('3', '4', '5', '6') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 150000 ELSE 250000 END) 
+                    ELSE 99999999
+                END)
+            
+            WHEN COALESCE(SUM(spp.jumlah_bayar), 0) < 
+                (CASE 
+                    WHEN s.kelas IN ('1', '2') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 200000 ELSE 300000 END) 
+                    WHEN s.kelas IN ('3', '4', '5', '6') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 150000 ELSE 250000 END) 
+                    ELSE 99999999
+                END)
+            THEN 
+                (CASE 
+                    WHEN s.kelas IN ('1', '2') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 200000 ELSE 300000 END) 
+                    WHEN s.kelas IN ('3', '4', '5', '6') 
+                         THEN (CASE WHEN s.status_bantuan = 'Ya' THEN 150000 ELSE 250000 END) 
+                    ELSE 99999999
+                END) - COALESCE(SUM(spp.jumlah_bayar), 0)
+
+            ELSE 0
+        END
+    , 0)) AS total_sisa_tunggakan,
+
+    -- Kolom tanggal hari ini
+    CURDATE() AS tanggal_hari_ini
+
+FROM siswa s
+LEFT JOIN spp 
+    ON s.nisn = spp.nisn 
+    AND spp.periode = 
+        CASE $P{bulan}  
+            WHEN 1 THEN 'Januari'
+            WHEN 2 THEN 'Februari'
+            WHEN 3 THEN 'Maret'
+            WHEN 4 THEN 'April'
+            WHEN 5 THEN 'Mei'
+            WHEN 6 THEN 'Juni'
+            WHEN 7 THEN 'Juli'
+            WHEN 8 THEN 'Agustus'
+            WHEN 9 THEN 'September'
+            WHEN 10 THEN 'Oktober'
+            WHEN 11 THEN 'November'
+            WHEN 12 THEN 'Desember'
+        END
+    AND (MONTH(spp.tanggal) >= $P{bulan} OR spp.status != 'Lunas')  
+
+JOIN (SELECT @no := 0) AS init_var
+WHERE s.kelas = $P{kelas}
+AND s.status != 'Tidak Aktif' 
+GROUP BY s.nisn, s.nipd, s.nama_siswa, s.kelas, s.status_bantuan, spp.periode
+ORDER BY s.nama_siswa ASC;]]>
+	</queryString>
+	<field name="no" class="java.lang.Long"/>
+	<field name="nisn" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nipd" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nama_siswa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="kelas" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="status_bantuan" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="periode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="spp" class="java.lang.String"/>
+	<field name="k_bulanan" class="java.lang.String"/>
+	<field name="tanggal_pembayaran_terakhir" class="java.lang.String"/>
+	<field name="total" class="java.lang.String"/>
+	<field name="status" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_sisa_tunggakan" class="java.lang.String"/>
+	<field name="tanggal_hari_ini" class="java.sql.Date"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="-20" width="763" height="92" backcolor="#FFFFFF" uuid="651de582-66f3-4f51-a059-d56b88b75bdc"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="19" y="10" width="60" height="72" uuid="fe1a0965-73ec-4041-a451-f78be8b42684"/>
+					<imageExpression><![CDATA["Laporan\\sekolah.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="694" y="10" width="60" height="72" uuid="a0a67033-0a6c-4c19-8962-b274469e9a73"/>
+					<imageExpression><![CDATA["Laporan\\logo.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="162" y="23" width="430" height="29" forecolor="#030303" uuid="708fd7e0-ecbc-47a1-a4a2-70312107debe"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SD ISLAM TELADAN PULOGADUNG PAGI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="200" y="52" width="353" height="30" forecolor="#030303" backcolor="#FFFFFF" uuid="9eec12ab-2a9f-4c94-8fa4-2968c3d49519"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Jl. Raya Bekasi Km. 18, Jatinegara, Kecamatan Cakung, Kota Jakarta Timur, DKI Jakarta 13930]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="43">
+			<staticText>
+				<reportElement mode="Opaque" x="23" y="22" width="69" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="6f55bb57-2000-4e52-9c07-5ef9498efaff">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="df499939-4c4c-46bd-888f-334387f3664e"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NISN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="92" y="22" width="46" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="828156dc-27f9-4e1d-8e58-ef9b2731f1aa">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="89ddb9a2-2def-4b1a-b0f3-da9b9f3a77bb"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIPD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="138" y="22" width="131" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="71ebd9f4-2529-4e11-924e-64da5781d66e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9c0e08cf-dc36-498d-b530-cdda87c357e3"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Siswa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="269" y="22" width="36" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="c9df31b4-470a-4493-834f-258d28f5b1dd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="e1ac9029-75d6-4a64-890e-166766f5ba72"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Kelas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="305" y="22" width="63" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="3b80d3d7-69db-45e2-9571-2fdc82260b7a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2bac613c-94bb-4f15-8372-433fab6f08ee"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="368" y="22" width="58" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="3ce588f2-ad61-4880-80ab-b2f9c499ca10">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f9122920-e26e-49f2-ae7c-f05037245292"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Spp]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="426" y="22" width="74" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="a8e10cb5-97e9-4ea1-8870-d8c004a53daf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f9122920-e26e-49f2-ae7c-f05037245292"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[K.Bulanan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="500" y="22" width="65" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="4243911d-8d8c-4ceb-87d6-e383e9994959">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f9122920-e26e-49f2-ae7c-f05037245292"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="565" y="22" width="76" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="6dcacede-cd14-4330-a27b-360d8dda030f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="bbefae1b-e717-4964-abf4-23506bf52f92"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sisa Tagihan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="641" y="22" width="59" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="fea8f5ba-0e07-4b34-92d5-a30b06c9b82b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f9122920-e26e-49f2-ae7c-f05037245292"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[P.Bantuan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="700" y="22" width="63" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="f0139092-d9b7-4c60-9301-c729c38efd2c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="bbefae1b-e717-4964-abf4-23506bf52f92"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="0" width="180" height="19" forecolor="#030303" backcolor="#FFFFFF" uuid="9f1c387c-9c44-4a5e-aab9-8f90d8de1a86"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Laporan SPP Nunggak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="22" width="23" height="21" forecolor="#006699" backcolor="#E6E6E6" uuid="194eb53b-b5fb-4dba-97a7-efb862018efb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="1">
+			<line>
+				<reportElement x="0" y="0" width="763" height="1" forecolor="#666666" uuid="89972307-2fd6-4fcc-b5bc-639e2c0c5683"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="763" height="1" uuid="4b59aae7-6901-439e-81d5-82f3ecfd03ce"/>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="0" width="23" height="20" uuid="1799194f-ffdc-41ac-92b3-2414f0bc602c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="23" y="0" width="69" height="20" uuid="0ebfbac0-ac34-475d-990b-b833ec4b7714"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nisn}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="92" y="0" width="44" height="20" uuid="3e380c66-b4c6-4ec9-b4f6-11a198fe0b93"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nipd}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="305" y="0" width="63" height="20" uuid="70bc1221-9964-4aea-b5a8-184412c9177a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periode}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="426" y="0" width="74" height="20" uuid="1d66c073-ca45-49dc-8974-a64cc533bf0d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{k_bulanan}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="700" y="0" width="63" height="20" uuid="0633f96f-a5c8-4ec5-aa34-1523ab9dcf03"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="641" y="0" width="59" height="20" uuid="ee063f8e-fb3f-4a56-8bb2-cde744021b78"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{status_bantuan}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="565" y="0" width="76" height="20" uuid="d8148391-b604-496f-a316-bea1bf4f054c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_sisa_tunggakan}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="368" y="0" width="58" height="20" uuid="b4b1ec55-4769-45d3-8598-74143eacc194"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{spp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="269" y="0" width="36" height="20" uuid="e2308abb-3165-4386-afc7-8f3dc673b9ed"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kelas}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="136" y="0" width="133" height="20" uuid="d5f7529f-0db8-4ba7-a761-017c1e81ad2c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nama_siswa}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="500" y="0" width="65" height="20" uuid="fafb5cb2-59b7-43b4-9d6f-e74a3ca59e31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="125">
+			<staticText>
+				<reportElement x="565" y="102" width="125" height="23" uuid="49ab30f8-ed9c-4b49-b4e6-f001192675b2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[...............................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="565" y="49" width="106" height="23" uuid="cd490e39-4129-4adb-b92e-3e9ad3c6b725"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Kepala Sekolah]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="565" y="32" width="46" height="17" uuid="db6f3e9f-662f-4886-8eb1-0c6a03527606"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Jakarta,]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="611" y="32" width="152" height="17" uuid="8f459d5d-2f3c-400a-ac17-f2ba065e304c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale("id", "ID")).format($F{tanggal_hari_ini})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Laporan_Absen" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="354d624d-ff0e-4596-84d8-c32b424c8c2e">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="simsditp"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="kelas" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="tanggal" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="selectedDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="selectedMonth" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="selectedYear" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="bulanTahun" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+    s.kelas, 
+    s.nipd, 
+    s.nisn, 
+    s.nama_siswa, 
+    s.kelamin,
+    COUNT(CASE WHEN a.presensi = 'Hadir' THEN 1 END) AS total_hadir,
+    COUNT(CASE WHEN a.presensi = 'Izin' THEN 1 END) AS total_izin,
+    COUNT(CASE WHEN a.presensi = 'Alpa' THEN 1 END) AS total_alpa,
+    MAX(a.keterangan) AS keterangan,
+    MAX(a.tanggal) AS tanggal
+FROM 
+    siswa s
+LEFT JOIN 
+    absen a ON s.nipd = a.nipd 
+    AND DATE_FORMAT(a.tanggal, '%Y-%m') = $P{tanggal}
+    AND YEAR(a.tanggal) = $P{selectedYear} 
+WHERE 
+    s.kelas = $P{kelas}
+GROUP BY 
+    s.kelas, s.nipd, s.nisn, s.nama_siswa, s.kelamin
+ORDER BY 
+    s.nama_siswa;]]>
+	</queryString>
+	<field name="kelas" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nipd" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nisn" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nisn"/>
+		<property name="com.jaspersoft.studio.field.label" value="nisn"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="absen"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nama_siswa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nama_siswa"/>
+		<property name="com.jaspersoft.studio.field.label" value="nama_siswa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="absen"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="kelamin" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_hadir" class="java.lang.Long"/>
+	<field name="total_izin" class="java.lang.Long"/>
+	<field name="total_alpa" class="java.lang.Long"/>
+	<field name="keterangan" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="keterangan"/>
+		<property name="com.jaspersoft.studio.field.label" value="keterangan"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="absen"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tanggal" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="tanggal"/>
+		<property name="com.jaspersoft.studio.field.label" value="tanggal"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="absen"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#FFFFFF" uuid="510d5198-5375-47eb-876b-c5437a5eda21"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="10" y="10" width="60" height="72" uuid="de34ad4f-a5dd-4faa-9512-0c023e2fa010"/>
+					<imageExpression><![CDATA["Laporan\\sekolah.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="520" y="10" width="60" height="73" uuid="0ece569a-73ec-49aa-bf25-6ca2a38e00ee"/>
+					<imageExpression><![CDATA["Laporan\\logo.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="80" y="24" width="430" height="29" forecolor="#030303" uuid="6ea40c19-8e6e-4ffe-bdff-13fc6bd9df60"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SD ISLAM TELADAN PULOGADUNG PAGI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="119" y="53" width="353" height="30" forecolor="#030303" backcolor="#FFFFFF" uuid="266abf98-956b-4764-b736-0febb375de65"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Jl. Raya Bekasi Km. 18, Jatinegara, Kecamatan Cakung, Kota Jakarta Timur, DKI Jakarta 13930]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="24">
+			<staticText>
+				<reportElement x="185" y="0" width="180" height="20" forecolor="#030303" backcolor="#FFFFFF" uuid="247cd3d7-8c37-4c9b-a50d-23f78ec9c8f0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Laporan Absensi]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="-20" y="20" width="595" height="1" forecolor="#666666" uuid="5bc55543-afd1-474c-9be1-21e5ebeef1c3"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="60" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="1496e7a8-64b6-472e-ba82-2ea7d195a144">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21e79fc3-4659-4336-8f0a-9d0b2bf0615a"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NISN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="112" y="0" width="169" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="c7ef090b-1491-487a-8c85-093beda0eee0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c142811e-3f03-41e2-b87e-2800a424b0dd"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Siswa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="304" y="0" width="55" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="edaa45d0-f90b-4ad5-8442-4fd5bb98594c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2d0f4a7a-f417-4b75-885d-089a5d084782"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Kelas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="359" y="0" width="41" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="1fa80716-c915-42b0-b722-0138effa2f79">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="646445ba-558c-452f-8c8a-27b95964c415"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hadir]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="400" y="0" width="37" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="a9519ef0-85ed-4e73-8d03-31769e45c215">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8d3032f9-1904-4ed2-8b3a-3e695492d56b"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Izin]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="474" y="0" width="81" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="87f54679-cd06-4cdd-a22b-3241a0babb2a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="540d31ea-9700-4bf6-baef-6832c5e7e0c6"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bulan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="437" y="0" width="37" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="4417defe-9bc9-4354-ae3f-4391294f34e1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8d3032f9-1904-4ed2-8b3a-3e695492d56b"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Alpa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="280" y="0" width="24" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="4bdd42ba-b6bf-4e95-9d36-f0f614705784">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2d0f4a7a-f417-4b75-885d-089a5d084782"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JK]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="60" y="0" width="52" height="20" forecolor="#0D0D0D" backcolor="#E6E6E6" uuid="89a05e14-6092-4d77-9da6-38fdad0b1137">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21e79fc3-4659-4336-8f0a-9d0b2bf0615a"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIPD]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1" uuid="2baa083c-3ee3-40f6-9a75-ee888752f2e0"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="60" height="20" uuid="24c96d76-3447-4da7-951d-b95903f02c31">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21e79fc3-4659-4336-8f0a-9d0b2bf0615a"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nisn}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="112" y="0" width="169" height="20" uuid="94b3deb4-2a07-4bce-a61b-e721b9747bb5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c142811e-3f03-41e2-b87e-2800a424b0dd"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nama_siswa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="359" y="0" width="41" height="20" uuid="4622bfaa-64d0-4614-a485-178fdc2e9dec">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="646445ba-558c-452f-8c8a-27b95964c415"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_hadir}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="474" y="0" width="81" height="20" uuid="25eb33b2-2976-4294-af38-f561919eefaf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="540d31ea-9700-4bf6-baef-6832c5e7e0c6"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("MMMM yyyy", new java.util.Locale("id", "ID")).format($F{tanggal})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="37" height="20" uuid="dd17bb0b-73ea-4361-b858-184a42516d66">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8d3032f9-1904-4ed2-8b3a-3e695492d56b"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_izin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="0" width="37" height="20" uuid="59963268-8959-433c-b55e-9b2c57375e46">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8d3032f9-1904-4ed2-8b3a-3e695492d56b"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_alpa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="305" y="0" width="55" height="20" uuid="9c863f22-626b-4448-a379-138d5acd3b06">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2d0f4a7a-f417-4b75-885d-089a5d084782"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kelas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="281" y="0" width="24" height="20" uuid="372d909b-5f4f-45fc-9b3d-4b9d62e66ed0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2d0f4a7a-f417-4b75-885d-089a5d084782"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kelamin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="52" height="20" uuid="a2ea92ee-61c8-4f27-a495-faf675dff3c7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21e79fc3-4659-4336-8f0a-9d0b2bf0615a"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nipd}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="124">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="411" y="30" width="144" height="17" uuid="f9bf9039-97c4-4227-8547-7cceb1ff2731"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale("id", "ID")).format($F{tanggal})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="365" y="47" width="109" height="23" uuid="ed49a3f6-6894-46c8-9237-328a6a7ea5f4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Kepala Sekolah]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="371" y="101" width="129" height="23" uuid="9bed3b5c-ce80-4224-a007-5fe8edf095c4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[...............................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="365" y="30" width="46" height="17" uuid="7d578421-a1e4-48fc-983b-65ea6c66becd"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Jakarta,]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>
